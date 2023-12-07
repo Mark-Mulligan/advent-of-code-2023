@@ -16,10 +16,16 @@ class Solution:
                 formatted_line = line.strip()
 
                 if "seeds" in formatted_line:
-                    self.seeds = [
+                    seed_positions = [
                         int(seed)
                         for seed in formatted_line.split(":")[1].strip().split(" ")
                     ]
+
+                    for i, seed in enumerate(seed_positions):
+                        if i % 2 == 0:
+                            min_seed = seed
+                            max_seed = seed + seed_positions[i + 1]
+                            self.seeds.append(min_seed, max_seed)
 
                 if "map" in formatted_line:
                     current_map = formatted_line.split(" ")[0].strip()
@@ -58,7 +64,7 @@ class Solution:
 
 
 solution = Solution("./input_day5.txt")
-
+print(solution.seeds)
 for map in solution.maps:
     solution.map_seeds(map)
 
