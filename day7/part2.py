@@ -57,14 +57,14 @@ class Solution():
                 score = 4
             elif card_counts['J'] == 1 and len(card_counts) == 2:
                 score = 7
-            elif card_counts['J'] == 1 and len(card_counts) == 3:
+            elif card_counts['J'] == 1 and len(card_counts) == 3 and 3 in card_counts.values():
                 score = 6
             elif card_counts['J'] == 1 and len(card_counts) == 3:
                 score = 5
             elif card_counts['J'] == 1 and len(card_counts) == 4:
                 score = 4
-            elif card_counts['J'] == 1:
-                score = 3
+            elif card_counts['J'] == 1 and len(card_counts) == 5:
+                score = 2
 
         return score
 
@@ -84,12 +84,17 @@ class Solution():
             a['score'], a['card_scores']))
 
         for i, card in enumerate(cards):
-            print(card)
             self.winnings += card['bet'] * (i + 1)
 
 
 solution = Solution('./input_day7.txt')
 print(solution.winnings)
 
+
 # 252973756 wrong (too high)
 # 252590412 wrong
+# 252307201 wrong
+# 252390883 wrong
+
+
+# 252127335 correct answer
