@@ -93,6 +93,59 @@ class Solution():
                 break
 
         return steps
+    
+    def check_up_left(self, x, y):
+        pipe_count = 0
+
+        while x > 0 and y > 0:
+            x -= 1
+            y -= 1
+
+            found_pipe = self.matrix_hash.get(f"{x}-{y}")
+            if found_pipe:
+                pipe_count += 1
+        
+        return pipe_count
+
+    def check_up_right(self, x, y):
+        pipe_count = 0
+
+        while x > 0 and y < len(self.matrix[x]) - 1:
+            x -= 1
+            y += 1
+
+            found_pipe = self.matrix_hash.get(f"{x}-{y}")
+            if found_pipe:
+                pipe_count += 1
+        
+        return pipe_count
+    
+    def check_down_left(self, x, y):
+        pipe_count = 0
+
+        while x < len(self.matrix) - 1 and y > 0:
+            x += 1
+            y -= 1
+
+            found_pipe = self.matrix_hash.get(f"{x}-{y}")
+            
+            if found_pipe:
+                pipe_count += 1
+        
+        return pipe_count
+    
+    def check_down_right(self, x, y):
+        pipe_count = 0
+
+        while x < len(self.matrix) - 1 and y < len(self.marked_matrix[x]) - 1:
+            x += 1
+            y += 1
+
+            found_pipe = self.matrix_hash.get(f"{x}-{y}")
+            if found_pipe:
+                pipe_count += 1
+        
+        return pipe_count
 
 
     def check_left(self, x, y):
@@ -152,10 +205,17 @@ class Solution():
             down_pipe_count = self.check_down(x, y)
             pipe_counts = [left_pipe_count, right_pipe_count, up_pipe_count, down_pipe_count]
 
-            if x == 4 and y == 4:
-                print(pipe_counts)
+            up_left_pipe_count = self.check_up_left(x, y)
+            up_right_pipe_count = self.check_up_right(x, y)
+            down_left_pipe_count = self.check_down_left(x, y)
+            down_right_pipe_count = self.check_down_right(x, y)
+            diag_pipe_counts = [up_left_pipe_count, up_right_pipe_count, down_left_pipe_count, down_right_pipe_count]
 
-            if 0 in pipe_counts:
+            if x == 4 and y == 7:
+                print(pipe_counts)
+                print(diag_pipe_counts)
+                
+            if 0 in pipe_counts or 0 in diag_pipe_counts:
                 self.marked_matrix[x][y] = 'O'
                 return False
             
@@ -179,9 +239,11 @@ class Solution():
         return count
 
 
-solution = Solution('./test_input3.txt')
+solution = Solution('./input_day10.txt')
 solution.check_paths()
 answer = solution.count_surrounded_tiles()
 print(answer)
-pprint(solution.marked_matrix, width=120)
+# pprint(solution.marked_matrix, width=1200)
 
+# 597 too high
+# 580 too high
