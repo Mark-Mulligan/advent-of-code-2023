@@ -16,6 +16,7 @@ class Solution():
     def __init__(self, file_path):
         self.file_path = file_path
         self.matrix = []
+        self.matrix_hash = {}
         self.marked_matrix = []
         self.read_input()
 
@@ -24,7 +25,7 @@ class Solution():
             for line in input:
                 row = list(line.strip())
                 self.matrix.append(row)
-                self.marked_matrix.append(['.' for item in row])
+                self.marked_matrix.append(row)
 
     def find_starting_point(self):
         for r_index, r_value in enumerate(self.matrix):
@@ -42,7 +43,7 @@ class Solution():
 
         while next_direction:
             steps += 1
-            self.marked_matrix[x][y] = 'X'
+            self.matrix_hash[f"{x}-{y}"] = matrix[x][y]
             if next_direction == 'up':
                 x = x - 1
 
@@ -93,99 +94,94 @@ class Solution():
 
         return steps
 
-    
+
     def check_left(self, x, y):
-        matrix = self.marked_matrix
-        x_count = 0
+        pipe_count = 0
 
         while y > 0:
             y -= 1
 
-            if matrix[x][y] == 'X':
-                x_count += 1
+            found_pipe = self.matrix_hash.get(f"{x}-{y}")
+            if found_pipe and found_pipe in ['|', 'J', 'L', 'F', '7']:
+                pipe_count += 1
 
-        return x_count
+        return pipe_count
     
     def check_right(self, x, y):
-        matrix = self.marked_matrix
-        x_count = 0
+        pipe_count = 0
+        
 
-        while y < len(self.marked_matrix[x]) - 2:
+        while y < len(self.matrix[x]) - 1:
             y += 1
 
-            if matrix[x][y] == 'X':
-                x_count += 1
+            found_pipe = self.matrix_hash.get(f"{x}-{y}")
+            if found_pipe and found_pipe in ['|', 'J', 'L', 'F', '7']:
+                pipe_count += 1
             
-        return x_count
+        return pipe_count
     
     def check_up(self, x, y):
-        matrix = self.marked_matrix
-        x_count = 0
+        pipe_count = 0
         
         while x > 0:
             x -= 1
         
-            if matrix[x][y] == 'X':
-                x_count += 1
+            found_pipe = self.matrix_hash.get(f"{x}-{y}")
+            if found_pipe and found_pipe in ['-', 'J', 'L', 'F', '7']:
+                pipe_count += 1
         
-        return x_count
+        return pipe_count
     
     def check_down(self, x, y):
-        matrix = self.marked_matrix
-        x_count = 0
+        pipe_count = 0
         
-        while x < len(self.marked_matrix) - 2:
+        while x < len(self.matrix) - 1:
             x += 1
         
-            if matrix[x][y] == 'X':
-                x_count += 1
+            found_pipe = self.matrix_hash.get(f"{x}-{y}")
+            if found_pipe and found_pipe in ['-', 'J', 'L', 'F', '7']:
+                pipe_count += 1
         
-        return x_count
+        return pipe_count
     
     def check_tile(self, x, y):
-        matrix = self.marked_matrix
+        if f"{x}-{y}" not in self.matrix_hash:
+            left_pipe_count = self.check_left(x, y)
+            right_pipe_count = self.check_right(x, y)
+            up_pipe_count = self.check_up(x, y)
+            down_pipe_count = self.check_down(x, y)
+            pipe_counts = [left_pipe_count, right_pipe_count, up_pipe_count, down_pipe_count]
 
-        if matrix[x][y] != 'X':
-            left_x_count = self.check_left(x, y)
-            right_x_count = self.check_right(x, y)
-            up_x_count = self.check_up(x, y)
-            down_x_count = self.check_down(x, y)
-            x_counts = [left_x_count, right_x_count, up_x_count, down_x_count]
+            if x == 4 and y == 4:
+                print(pipe_counts)
 
-            if 0 in x_counts:
+            if 0 in pipe_counts:
+                self.marked_matrix[x][y] = 'O'
                 return False
-
-            for count in x_counts:
+            
+            for count in pipe_counts:
                 if count % 2 != 0:
                     return True
-            
+                
+            self.marked_matrix[x][y] = 'O'
             return False
-        
+            
         return False
-    
-    def mark_tiles(self):
-        matrix = self.marked_matrix
-
-        for r in range(len(matrix)):
-            for c in range(len(matrix[r])):
-                if matrix[r][c] != 'X' and self.check_tile(r, c):
-                    matrix[r][c] = 'O'
 
     def count_surrounded_tiles(self):
         count = 0
-
-        for r in range(len(self.marked_matrix)):
-            for c in range(len(self.marked_matrix[r])):
-                if self.marked_matrix[r][c] == 'O':
+        for r in range(len(self.matrix)):
+            for c in range(len(self.matrix[r])):
+                if self.check_tile(r, c):
+                    self.marked_matrix[r][c] = 'I'
                     count += 1
-        
+             
         return count
+
 
 solution = Solution('./test_input3.txt')
 solution.check_paths()
-pprint(solution.marked_matrix, width=120)
-solution.mark_tiles()
 answer = solution.count_surrounded_tiles()
-pprint(solution.marked_matrix, width=120)
 print(answer)
+pprint(solution.marked_matrix, width=120)
 
