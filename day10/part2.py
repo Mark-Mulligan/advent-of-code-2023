@@ -93,39 +93,99 @@ class Solution():
 
         return steps
 
-    def mark_areas_horizontally(self):
-        marker_on = False
+    
+    def check_left(self, x, y):
+        matrix = self.marked_matrix
+        x_count = 0
+
+        while y > 0:
+            y -= 1
+
+            if matrix[x][y] == 'X':
+                x_count += 1
+
+        return x_count
+    
+    def check_right(self, x, y):
+        matrix = self.marked_matrix
+        x_count = 0
+
+        while y < len(self.marked_matrix[x]) - 2:
+            y += 1
+
+            if matrix[x][y] == 'X':
+                x_count += 1
+            
+        return x_count
+    
+    def check_up(self, x, y):
+        matrix = self.marked_matrix
+        x_count = 0
+        
+        while x > 0:
+            x -= 1
+        
+            if matrix[x][y] == 'X':
+                x_count += 1
+        
+        return x_count
+    
+    def check_down(self, x, y):
+        matrix = self.marked_matrix
+        x_count = 0
+        
+        while x < len(self.marked_matrix) - 2:
+            x += 1
+        
+            if matrix[x][y] == 'X':
+                x_count += 1
+        
+        return x_count
+    
+    def check_tile(self, x, y):
+        matrix = self.marked_matrix
+
+        if matrix[x][y] != 'X':
+            left_x_count = self.check_left(x, y)
+            right_x_count = self.check_right(x, y)
+            up_x_count = self.check_up(x, y)
+            down_x_count = self.check_down(x, y)
+            x_counts = [left_x_count, right_x_count, up_x_count, down_x_count]
+
+            if 0 in x_counts:
+                return False
+
+            for count in x_counts:
+                if count % 2 != 0:
+                    return True
+            
+            return False
+        
+        return False
+    
+    def mark_tiles(self):
+        matrix = self.marked_matrix
+
+        for r in range(len(matrix)):
+            for c in range(len(matrix[r])):
+                if matrix[r][c] != 'X' and self.check_tile(r, c):
+                    matrix[r][c] = 'O'
+
+    def count_surrounded_tiles(self):
+        count = 0
 
         for r in range(len(self.marked_matrix)):
-            marker_on = False
-
             for c in range(len(self.marked_matrix[r])):
-                if self.marked_matrix[r][c] == 'X':
-                    if marker_on == False:
-                        marker_on = True
-                    else:
-                        marker_on = False
-                elif marker_on:
-                    self.marked_matrix[r][c] = 'I'
-
-    def mark_areas_vertically(self):
-        marker_on = False
-
-        for c in range(len(self.marked_matrix[0])):
-            marker_on = False
-
-            for r in range(len(self.marked_matrix)):
-                if self.marked_matrix[r][c] == 'X':
-                    if marker_on == False:
-                        marker_on = True
-                    else:
-                        marker_on = False
-                elif marker_on:
-                    self.marked_matrix[r][c] = 'I'
-
+                if self.marked_matrix[r][c] == 'O':
+                    count += 1
+        
+        return count
 
 solution = Solution('./test_input3.txt')
 solution.check_paths()
-solution.mark_areas_horizontally()
-solution.mark_areas_vertically()
 pprint(solution.marked_matrix, width=120)
+solution.mark_tiles()
+answer = solution.count_surrounded_tiles()
+pprint(solution.marked_matrix, width=120)
+print(answer)
+
